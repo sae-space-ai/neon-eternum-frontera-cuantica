@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/* ============ ANIMACIONES ============ */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+  25% { opacity: 0.9; }
+  75% { opacity: 0.95; }
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff; }
+  50% { text-shadow: 0 0 2px #0ff, 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff; }
+}
+
+@keyframes pulse-pink {
+  0%, 100% { text-shadow: 0 0 5px #f0f, 0 0 10px #f0f, 0 0 20px #f0f; }
+  50% { text-shadow: 0 0 2px #f0f, 0 0 5px #f0f, 0 0 10px #f0f; }
+}
+
+@keyframes rain {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 20% 100%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hud-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.3), inset 0 0 5px rgba(0, 255, 255, 0.1); }
+  50% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 10px rgba(0, 255, 255, 0.2); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(0, 255, 255, 0.4); }
+  50% { border-color: rgba(0, 255, 255, 0.8); }
+}
+
+/* ============ SCROLLBAR ============ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #0ff #0a0a1a;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0a0a1a;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #0ff;
+  border-radius: 3px;
+}
+
+/* ============ BASE ============ */
+body {
+  background: #000;
+  color: #e0e0e0;
+  font-family: 'Courier New', 'Consolas', monospace;
+  overflow: hidden;
+}
+
+/* ============ CRT EFFECTS ============ */
+.rain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 255, 0.01) 2px,
+    rgba(0, 255, 255, 0.01) 4px
+  );
+  animation: rain 8s linear infinite;
+}
+
+.scanline-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 255, 255, 0.05);
+  z-index: 101;
+  pointer-events: none;
+  animation: scanline 4s linear infinite;
+}
+
+/* ============ TEXT EFFECTS ============ */
+.neon-text {
+  animation: pulse-neon 2s ease-in-out infinite;
+  color: #0ff;
+}
+
+.neon-pink {
+  animation: pulse-pink 2s ease-in-out infinite;
+  color: #f0f;
+}
+
+.glitch-text {
+  animation: glitch 0.3s ease-in-out infinite;
+}
+
+.title-text {
+  font-size: 3rem;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #0ff 0%, #f0f 50%, #ff0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+}
+
+/* ============ HUD PANELS ============ */
+.hud-panel {
+  background: rgba(0, 10, 20, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  animation: hud-pulse 3s ease-in-out infinite;
+  backdrop-filter: blur(5px);
+}
+
+/* ============ MENU ============ */
+.menu-option {
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  background: transparent;
+}
+
+.menu-option:hover {
+  border-color: #0ff;
+  background: rgba(0, 255, 255, 0.1);
+  text-shadow: 0 0 10px #0ff;
+  transform: translateX(5px);
+}
+
+/* ============ ANIMATIONS ============ */
+.float-anim {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ============ UTILITIES ============ */
+.cyber-border {
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  animation: borderGlow 2s ease-in-out infinite;
+}
