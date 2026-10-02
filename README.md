@@ -1,9 +1,9 @@
 # 🎮 NEON ETERNUM: FRONTERA CUÁNTICA
 
-> Juego RPG de acción cyberpunk de mundo abierto — Ciencia ficción y fantasía espacial.
+> Juego RPG cyberpunk de mundo abierto — Ciencia ficción y fantasía espacial.
 
 ![Plataforma](https://img.shields.io/badge/Plataforma-Web-00ffcc?style=flat-square)
-![Motor](https://img.shields.io/badge/Motor-React%20%2B%20Vite-61dafb?style=flat-square)
+![Stack](https://img.shields.io/badge/Stack-React%20%2B%20Vite%20%2B%20Zustand-61dafb?style=flat-square)
 ![Estilo](https://img.shields.io/badge/Estilo-Cyberpunk-ff00ff?style=flat-square)
 
 ---
@@ -12,9 +12,34 @@
 
 **NEON ETERNUM: FRONTERA CUÁNTICA** es un videojuego RPG de texto interactivo con interfaz HUD diegética, ambientado en el planeta Kepler-186F (Eternum), año 2187.
 
+### Características
+
+- 🗺️ Mundo abierto con 10+ zonas explorables
+- 👤 Creación de personaje con 6 clases y 6 trasfondos
+- 💬 Sistema de diálogos con NPCs con memoria
+- ⚔️ Combate táctico con sistema de daño
+- 📦 Inventario con objetos y equipo
+- 🎯 Sistema de misiones con progresión
+- 📊 HUD completo (salud, energía, escudo, XP, créditos)
+- 🌧️ Clima dinámico y ciclo día/noche
+- 🏆 Sistema de reputación con 5 facciones
+- 💾 Persistencia automática en localStorage
+- 🎨 Efectos CRT, scanlines y animaciones Framer Motion
+
 ---
 
-## 🚀 DESPLIEGUE EN VERCEL (Guía paso a paso)
+## 🛠️ Stack Tecnológico
+
+- **React 19** + **TypeScript**
+- **Vite 6** (build tool)
+- **Tailwind CSS 4** (estilos)
+- **Zustand** (estado global con persistencia)
+- **Framer Motion** (animaciones)
+- **Lucide React** (iconos)
+
+---
+
+## 🚀 DESPLIEGUE EN VERCEL
 
 ### Método 1: Desde GitHub (Recomendado)
 
@@ -22,7 +47,7 @@
 ```bash
 git init
 git add .
-git commit -m "NEON ETERNUM v1.0"
+git commit -m "NEON ETERNUM v2.0"
 git remote add origin https://github.com/TU_USUARIO/neon-eternum.git
 git push -u origin main
 ```
@@ -54,7 +79,7 @@ vercel --prod
 
 ```bash
 npm install
-npm run dev      # Desarrollo en localhost
+npm run dev      # Desarrollo en localhost:3000
 npm run build    # Compilar para producción
 npm run preview  # Previsualizar build
 ```
@@ -89,38 +114,47 @@ npm run build   # Verifica que compila localmente
 | `ESTADO` | Ver stats |
 | `MAPA` | Ver mapa |
 | `MISIONES` | Misiones activas |
-| `HABLAR` | Dialogar con NPC |
+| `HABLAR [NPC]` | Dialogar con NPC |
 | `EXAMINAR` | Observar entorno |
 | `HACKEAR` | Hackear sistemas |
 | `ATACAR` | Combate |
+| `USAR [objeto]` | Usar item |
 | `DESCANSAR` | Recuperar HP/EN |
 | `COMPRAR` | Tienda |
 | `GUARDAR` | Guardar partida |
 | `SALIR` | Menú principal |
+| `AYUDA` | Ver comandos |
 
 ---
 
-## 🛠️ Stack Tecnológico
-
-- **React 19** + **TypeScript**
-- **Vite 6** (build tool)
-- **Tailwind CSS 4** (estilos)
-
----
-
-## 📁 Estructura
+## 📁 Estructura del proyecto
 
 ```
-├── index.html          # HTML base
-├── vercel.json         # Config Vercel (Vite)
-├── package.json        # Dependencias
-├── vite.config.js      # Config Vite
-├── tsconfig.json       # Config TypeScript
-├── README.md           # Este archivo
+├── index.html              # HTML base
+├── package.json            # Dependencias
+├── vite.config.js          # Config Vite
+├── tsconfig.json           # Config TypeScript
+├── README.md               # Este archivo
 └── src/
-    ├── App.tsx         # Motor del juego
-    ├── main.tsx        # Entry point
-    └── index.css       # Estilos cyberpunk
+    ├── App.tsx             # Componente principal
+    ├── main.tsx            # Entry point
+    ├── index.css           # Estilos cyberpunk
+    ├── store/
+    │   └── gameStore.ts    # Zustand store (estado global)
+    ├── hooks/
+    │   └── useGameEngine.ts # Motor del juego
+    └── components/
+        ├── GameLayout.tsx      # Layout principal (3 paneles)
+        ├── HUD.tsx             # Panel izquierdo (stats)
+        ├── Terminal.tsx        # Panel central (narrativa)
+        ├── CommandInput.tsx    # Input de comandos
+        ├── InventoryPanel.tsx  # Panel derecho (inventario)
+        ├── MapPanel.tsx        # Panel derecho (minimapa)
+        ├── StatusPanel.tsx     # Panel derecho (facciones)
+        ├── TitleScreen.tsx     # Pantalla de título
+        ├── MenuScreen.tsx      # Menú principal
+        ├── CharacterCreation.tsx # Creación de personaje
+        └── IntroScreen.tsx     # Cinemática de apertura
 ```
 
 ---
