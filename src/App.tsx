@@ -69,10 +69,9 @@ export default function App() {
   const [tempBackground, setTempBackground] = useState('');
   const [hour, setHour] = useState(21);
   const [minute, setMinute] = useState(47);
-  const [weather, setWeather] = useState('Lluvia ácida ligera');
-  const [temperature, setTemperature] = useState(18);
-  const [radiation, setRadiation] = useState(2);
-  const [turnCount, setTurnCount] = useState(0);
+  const [weather] = useState('Lluvia ácida ligera');
+  const [temperature] = useState(18);
+  const [radiation] = useState(2);
   const logEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -87,6 +86,26 @@ export default function App() {
       inputRef.current?.focus();
     }
   }, [screen]);
+
+  // Check for level up when player XP changes
+  useEffect(() => {
+    if (!player) return;
+    if (player.xp >= player.xpToNext) {
+      addLog('[¡SUBIDA DE NIVEL!]', 'system');
+      addLog(`[Nivel ${player.level} → Nivel ${player.level + 1}]`, 'system');
+      addLog('[+10 Salud máxima] [+5 Energía máxima] [+1 punto de habilidad]', 'system');
+      setPlayer(prev => prev ? {
+        ...prev,
+        level: prev.level + 1,
+        xp: prev.xp - prev.xpToNext,
+        xpToNext: Math.floor(prev.xpToNext * 1.5),
+        maxHealth: prev.maxHealth + 10,
+        health: prev.health + 10,
+        maxEnergy: prev.maxEnergy + 5,
+        energy: prev.energy + 5,
+      } : null);
+    }
+  }, [player?.xp]);
 
   const addLog = useCallback((text: string, type: GameLog['type'] = 'narrative') => {
     setGameLogs(prev => [...prev, { text, type }]);
@@ -340,7 +359,6 @@ export default function App() {
   const processCommand = (cmd: string) => {
     if (!player) return;
     const command = cmd.toLowerCase().trim();
-    setTurnCount(prev => prev + 1);
     advanceTime(3);
 
     // Random events
@@ -418,7 +436,7 @@ export default function App() {
       addLog('Ves un puesto de armas ilegales regentado por un hombre con brazo robótico. Más adelante, un grupo de matones de Helix patrulla.', 'narrative');
       addLog('', 'system');
       addLog('NPCs presentes: Vendedor Kael (puesto de armas), Patrulla Helix (3 soldados).', 'narrative');
-      setPlayer({ ...player, location: 'Calle Principal - Distrito Bajo' });
+      setPlayer(prev => prev ? { ...prev, location: 'Calle Principal - Distrito Bajo' } : null);
       addLog('', 'system');
       addLog('¿QUÉ HACES?', 'alert');
       return;
@@ -431,14 +449,19 @@ export default function App() {
         addLog('[¡ALERTA!] ¡Una figura emerge de las sombras! Un atracador con implantes de combate te apunta con una pistola láser.', 'combat');
         addLog('', 'system');
         addLog('ATACAR / ESQUIVAR / HABLAR / HUIR', 'alert');
+        setPlayer(prev => prev ? { ...prev, location: 'Callejón Profundo - Distrito Bajo' } : null);
       } else {
         addLog('Encuentras un cajón volcado. Dentro hay algunos objetos útiles.', 'narrative');
         addLog('[+1 Medkit básico encontrado] [+45 créditos encontrados]', 'loot');
-        setPlayer({ ...player, credits: player.credits + 45, inventory: [...player.inventory, 'Medkit básico'] });
+        setPlayer(prev => prev ? {
+          ...prev,
+          credits: prev.credits + 45,
+          inventory: [...prev.inventory, 'Medkit básico'],
+          location: 'Callejón Profundo - Distrito Bajo'
+        } : null);
         addLog('', 'system');
         addLog('¿QUÉ HACES?', 'alert');
       }
-      setPlayer(prev => prev ? { ...prev, location: 'Callejón Profundo - Distrito Bajo' } : null);
       return;
     }
 
@@ -470,7 +493,7 @@ export default function App() {
       addLog('"Fantasma" se inclina hacia ti. Su rostro está medio oculto por un implante facial de camuflaje.', 'narrative');
       addLog('"La Corporación Helix está excavando en las Ruinas del Sector 7. Han encontrado algo... algo que no debería existir. Tecnología cuántica alienígena. Si la Resistencia la consigue antes, podríamos cambiar el equilibrio de poder en todo Eternum."', 'dialog');
       addLog('', 'system');
-      addLog('"Necesito que infiltrarte en un almacén de Helix en el Distrito Medio. Roba los datos del Proyecto Eternidad. ¿Trato?"', 'dialog');
+      addLog('"Necesito que te infiltres en un almacén de Helix en el Distrito Medio. Roba los datos del Proyecto Eternidad. ¿Trato?"', 'dialog');
       setPlayer(prev => prev ? { ...prev, quest: 'Infiltrarse en el almacén de Helix y robar datos del Proyecto Eternidad.' } : null);
       addLog('', 'system');
       addLog('[MISIÓN ACTUALIZADA]', 'alert');
@@ -505,7 +528,6 @@ export default function App() {
           xp: prev.xp + 25,
           energy: Math.max(0, prev.energy - 15)
         } : null);
-        checkLevelUp();
       } else {
         addLog('Intentas hackear el terminal pero no tienes las habilidades necesarias. El sistema te rechaza con una descarga eléctrica.', 'combat');
         addLog('[-10 Salud]', 'combat');
@@ -528,7 +550,7 @@ export default function App() {
       } : null);
       advanceTime(60);
       addLog(`[+${healAmount} Salud] [+${energyRestore} Energía]`, 'system');
-      addLog(`[Han pasado 60 minutos. Hora actual: ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}]`, 'system');
+      addLog('[Han pasado 60 minutos.]', 'system');
       addLog('', 'system');
       addLog('¿QUÉ HACES?', 'alert');
       return;
@@ -601,16 +623,18 @@ export default function App() {
       addLog(`Atacas con tu ${player.equipped.weapon}. Impacto crítico.`, 'action');
       addLog(`[Infliges ${damage} de daño]`, 'combat');
       addLog(`[Recibes ${taken} de daño contraataque]`, 'combat');
+      
+      const newHealth = Math.max(0, player.health - taken);
       setPlayer(prev => prev ? {
         ...prev,
-        health: Math.max(0, prev.health - taken),
+        health: newHealth,
         xp: prev.xp + 15
       } : null);
-      checkLevelUp();
-      if ((player.health - taken) <= 0) {
+      
+      if (newHealth <= 0) {
         addLog('[¡HAS CAÍDO EN COMBATE!]', 'combat');
         addLog('La oscuridad te envuelve... pero tus implantes de rescate te reviven en el punto de control más cercano.', 'narrative');
-        addLog('[-50% créditos] [-1 nivel de experiencia]', 'combat');
+        addLog('[-50% créditos] [-30 XP]', 'combat');
         setPlayer(prev => prev ? {
           ...prev,
           health: Math.floor(prev.maxHealth * 0.5),
@@ -659,25 +683,6 @@ export default function App() {
     addLog('Comandos útiles: MOVER [N/S/E/O], INVENTARIO, ESTADO, HABLAR, EXAMINAR, MAPA, MISIONES, HACKEAR, DESCANSAR, COMPRAR, GUARDAR', 'system');
     addLog('', 'system');
     addLog('¿QUÉ HACES?', 'alert');
-  };
-
-  const checkLevelUp = () => {
-    if (!player) return;
-    if (player.xp >= player.xpToNext) {
-      addLog('[¡SUBIDA DE NIVEL!]', 'system');
-      addLog(`[Nivel ${player.level} → Nivel ${player.level + 1}]`, 'system');
-      addLog('[+10 Salud máxima] [+5 Energía máxima] [+1 punto de habilidad]', 'system');
-      setPlayer(prev => prev ? {
-        ...prev,
-        level: prev.level + 1,
-        xp: prev.xp - prev.xpToNext,
-        xpToNext: Math.floor(prev.xpToNext * 1.5),
-        maxHealth: prev.maxHealth + 10,
-        health: prev.health + 10,
-        maxEnergy: prev.maxEnergy + 5,
-        energy: prev.energy + 5,
-      } : null);
-    }
   };
 
   // ============ GAME SCREEN ============
